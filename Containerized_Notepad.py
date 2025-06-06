@@ -21,22 +21,30 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import scrolledtext
 
-mWin = tk.Tk()                     # make [m]ain window
-mWin.title("Containerized Notes")
-mWin.geometry("550x600")           #win size
+main_window = tk.Tk()                     # make [m]ain window
+main_window.title("Containerized Notes")
+main_window.geometry("600x600")           #win size x, y
 
-mylabel = tk.Label(mWin, text="Enter your notes")       # make label
-mylabel.grid(column=0, row=0)                             # attach to main
+label = tk.Label(main_window, text="Enter your notes")       # make label
+label.grid(column=0, row=0)                             # attach to main
 
-# editable note title
-noteHead = tk.Entry(mWin, width=60)
-noteHead.grid(column=0, row=1, pady=10, padx=10)
+note_header = tk.Entry(main_window, width=60)
+note_header.grid(column=0, row=1, pady=10, padx=10)
 
-# editable note field
-notebody = scrolledtext.ScrolledText(mWin, wrap=tk.WORD, width=60, height=5)
-notebody.grid(column=0, row=2, pady=10, padx=10)
+note_body = scrolledtext.ScrolledText(main_window, wrap=tk.WORD, width=60, height=5)
+note_body.grid(column=0, row=2, pady=10, padx=10)
 
 # save button header and field
+def fn_save_note():
+    # Take input of note header and body
+    data_h = note_header.get()
+    data_b = note_body.get("1.0", "end-1c") # -1c deletes 1 character from end, which is newline
+
+    print("entered note header:", data_h)
+    print("entered note body:", data_b)
+
+btn_save = tk.Button(main_window, text="save", command=fn_save_note)
+btn_save.grid(column=1, row=1, pady=10, padx=10)
 
 
 
@@ -44,4 +52,4 @@ notebody.grid(column=0, row=2, pady=10, padx=10)
 
 # Need to be able to save information, maybe as text file?
 
-mWin.mainloop()                    # keep [m]ain window open
+main_window.mainloop()                    # keep [m]ain window open
