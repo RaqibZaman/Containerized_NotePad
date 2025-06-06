@@ -16,10 +16,32 @@ title of a note.
     # 5. Must be able to save contents
     # ...
 
-import tkinter as tk            # import GUI library
-m = tk.Tk()                     # make [m]ain window
-m.geometry("500x300")   #win size
-l = tk.Label(m, text="test")    # Label function pulled from tk
-l.pack()                        # Add label to main window
+# import GUI library... pronounced "T K Inter ¯\_(ツ)_/¯"... also "as tk" to kind of encapsulate library if I import other libraries too
+import tkinter as tk            
+from tkinter import ttk
+from tkinter import scrolledtext
 
-m.mainloop()                    # keep [m]ain window open
+mWin = tk.Tk()                     # make [m]ain window
+mWin.title("Containerized Notes")
+mWin.geometry("550x600")           #win size
+
+mylabel = tk.Label(mWin, text="Enter your notes")       # make label
+mylabel.grid(column=0, row=0)                             # attach to main
+
+# editable note title
+noteHead = tk.Entry(mWin, width=60)
+noteHead.grid(column=0, row=1, pady=10, padx=10)
+
+# editable note field
+notebody = scrolledtext.ScrolledText(mWin, wrap=tk.WORD, width=60, height=5)
+notebody.grid(column=0, row=2, pady=10, padx=10)
+
+# save button header and field
+
+
+
+# Need to add word wrap to edible field
+
+# Need to be able to save information, maybe as text file?
+
+mWin.mainloop()                    # keep [m]ain window open
