@@ -14,6 +14,8 @@ title of a note.
         # a) header
         # b) editable field
     # 5. Must be able to save contents
+        # 1. test saving to a notepad
+        # 2. test saving to a database for fun- probably easier to manage in the long run
     # ...
 
 # import GUI library... pronounced "T K Inter ¯\_(ツ)_/¯"... also "as tk" to kind of encapsulate library if I import other libraries too
@@ -28,23 +30,40 @@ main_window.geometry("600x600")           #win size x, y
 label = tk.Label(main_window, text="Enter your notes")       # make label
 label.grid(column=0, row=0)                             # attach to main
 
+# note header
 note_header = tk.Entry(main_window, width=60)
 note_header.grid(column=0, row=1, pady=10, padx=10)
 
+# note body
 note_body = scrolledtext.ScrolledText(main_window, wrap=tk.WORD, width=60, height=5)
 note_body.grid(column=0, row=2, pady=10, padx=10)
 
-# save button header and field
-def fn_save_note():
-    # Take input of note header and body
+# print to terminal
+def fn_print():
+    # extract input of note header & footer
     data_h = note_header.get()
     data_b = note_body.get("1.0", "end-1c") # -1c deletes 1 character from end, which is newline
-
     print("entered note header:", data_h)
     print("entered note body:", data_b)
 
-btn_save = tk.Button(main_window, text="save", command=fn_save_note)
-btn_save.grid(column=1, row=1, pady=10, padx=10)
+# save to file
+def fn_save_to_file():
+    data_h = note_header.get()
+    data_b = note_body.get("1.0", "end-1c")
+    with open("saved_notes/testNote.txt", "w") as f:    # relative to script, make subdirectory "savedNotes"
+        f.write(data_h)
+        f.write('\n\n')
+        f.write(data_b)
+
+# !!! - I need to put all 3 buttons into 1 container if possible?
+btn_print = tk.Button(main_window, text="print", command=fn_print)
+btn_print.grid(column=1, row=1, pady=10, padx=10)
+
+btn_save_file = tk.Button(main_window, text="save file", command=fn_save_to_file)
+btn_save_file.grid(column=1, row=2, pady=10, padx=10)
+
+btn_save_db = tk.Button(main_window, text="save DB", command=fn_print)
+btn_save_db.grid(column=1, row=3, pady=10, padx=10)
 
 
 
