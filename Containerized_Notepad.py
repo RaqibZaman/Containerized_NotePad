@@ -18,8 +18,9 @@ title of a note.
         # 2. test saving to a database for fun- probably easier to manage in the long run
     # ...
 
-# import GUI library... pronounced "T K Inter ¯\_(ツ)_/¯"... also "as tk" to kind of encapsulate library if I import other libraries too
-import tkinter as tk            
+import subprocess
+import os
+import tkinter as tk                # import GUI library... pronounced "T K Inter ¯\_(ツ)_/¯"... also "as tk" to kind of encapsulate library if I import other libraries too      
 from tkinter import ttk
 from tkinter import scrolledtext
 
@@ -54,6 +55,18 @@ def fn_save_to_file():
         f.write(data_h)
         f.write('\n\n')
         f.write(data_b)
+    # for testing purposes, it would be nice to immediately open the file too
+    filepath = os.getcwd() + "\\saved_notes\\testNote.txt"
+    os.startfile(filepath)
+
+# save to db (later. Next step: containerize notes? uniquly name files?)
+def fn_save_to_db():
+    # extract input of note header & footer
+    #data_h = note_header.get()
+    #data_b = note_body.get("1.0", "end-1c") # -1c deletes 1 character from end, which is newline
+    #print("entered note header:", data_h)
+    #print("entered note body:", data_b)
+    print("nothing to see here...")
 
 # !!! - I need to put all 3 buttons into 1 container if possible?
 btn_print = tk.Button(main_window, text="print", command=fn_print)
@@ -62,7 +75,7 @@ btn_print.grid(column=1, row=1, pady=10, padx=10)
 btn_save_file = tk.Button(main_window, text="save file", command=fn_save_to_file)
 btn_save_file.grid(column=1, row=2, pady=10, padx=10)
 
-btn_save_db = tk.Button(main_window, text="save DB", command=fn_print)
+btn_save_db = tk.Button(main_window, text="save DB", command=fn_save_to_db)
 btn_save_db.grid(column=1, row=3, pady=10, padx=10)
 
 
