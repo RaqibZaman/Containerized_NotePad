@@ -18,6 +18,12 @@ title of a note.
         # 2. test saving to a database for fun- probably easier to manage in the long run
     # ...
 
+### Dev notes ###
+# You need to call grid() or pack() to attach element to main window
+# Functions have to be defined above its call
+# Later, I can use Frame to be a single container for each note. Then have a function that replicates this for each note
+# ...
+
 import subprocess
 import os
 import tkinter as tk                # import GUI library... pronounced "T K Inter ¯\_(ツ)_/¯"... also "as tk" to kind of encapsulate library if I import other libraries too      
@@ -28,16 +34,16 @@ main_window = tk.Tk()                     # make [m]ain window
 main_window.title("Containerized Notes")
 main_window.geometry("600x600")           #win size x, y
 
-label = tk.Label(main_window, text="Enter your notes")       # make label
-label.grid(column=0, row=0)                             # attach to main
+label = tk.Label(main_window, text="Enter your notes", font=("Courier", 16, "bold"))       # make label
+label.grid(column=0, row=0, pady=4, padx=10, sticky="w")                      # attach to main
 
 # note header
 note_header = tk.Entry(main_window, width=60)
-note_header.grid(column=0, row=1, pady=10, padx=10)
+note_header.grid(column=0, row=1, pady=4, padx=10, sticky="w")
 
 # note body
 note_body = scrolledtext.ScrolledText(main_window, wrap=tk.WORD, width=60, height=5)
-note_body.grid(column=0, row=2, pady=10, padx=10)
+note_body.grid(column=0, row=2, pady=2, padx=10, sticky="w")
 
 # print to terminal
 def fn_print():
@@ -68,15 +74,19 @@ def fn_save_to_db():
     #print("entered note body:", data_b)
     print("nothing to see here...")
 
-# !!! - I need to put all 3 buttons into 1 container if possible?
-btn_print = tk.Button(main_window, text="print", command=fn_print)
-btn_print.grid(column=1, row=1, pady=10, padx=10)
+# Put note buttons into 1 container
+btn_frame = tk.Frame(main_window)
+btn_frame.grid(column=1, row=2, pady=0, padx=10)
 
-btn_save_file = tk.Button(main_window, text="save file", command=fn_save_to_file)
-btn_save_file.grid(column=1, row=2, pady=10, padx=10)
+# Note Buttons
+btn_print = tk.Button(btn_frame, text="print", command=fn_print)
+btn_print.grid(column=0, row=1, pady=2, padx=0, sticky="w")
 
-btn_save_db = tk.Button(main_window, text="save DB", command=fn_save_to_db)
-btn_save_db.grid(column=1, row=3, pady=10, padx=10)
+btn_save_file = tk.Button(btn_frame, text="save file", command=fn_save_to_file)
+btn_save_file.grid(column=0, row=2, pady=2, padx=0, sticky="w")
+
+btn_save_db = tk.Button(btn_frame, text="save DB", command=fn_save_to_db)
+btn_save_db.grid(column=0, row=3, pady=2, padx=0, sticky="w")
 
 
 
