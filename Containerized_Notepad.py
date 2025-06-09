@@ -10,10 +10,16 @@ title of a note.
     # 1.[x] Make a window
     # 2.[x] Make editable field (note header, body)
     # 3.[] Must be able to save contents
-        # [x] test saving to a notepad
-            # -> [] when opening app, should automatically load any previous notes
+        # 1.[x] test saving to a notepad
+            # [x] when opening app, should automatically load any previous notes
         # 2.[] test saving to a database for fun- probably easier to manage in the long run
     # 4.[] Containerize each "note"
+        # 0.[x] Add/Delete note btn
+            # [] add/delete not btns functions
+        # 1.[] Should be able to make multiple notes
+        # 2.[] filename = basename + number
+            # You added and deleted random files. Find file of biggest number x. New file will be x+1
+        # 3.[] Deleting notes => delete file too
     # ...
 
 ### Dev notes ###
@@ -33,6 +39,9 @@ from tkinter import scrolledtext
 ###################
 ### Global Vars ###
 ################### 
+file_base_name = "containerNote_"
+file_num = 0
+file_ext = ".txt"
 note_path = "saved_notes/testNote.txt"
 
 #################
@@ -73,19 +82,39 @@ def fn_save_to_file():
 def fn_save_to_db():
     pass
 
+def load_note_container():
+    pass
+
 ##########
 ### UI ###
 ##########
-main_window = tk.Tk()                     # make [m]ain window
+
+# main window
+main_window = tk.Tk()
 main_window.title("Containerized Notes")
 main_window.geometry("650x600")           #win size x, y
 
+main_row_cnt = 0    # grid row count based on main window as parent
+
+# Enter Note Label
 label = tk.Label(main_window, text="Enter your notes", font=("Courier", 16, "bold"))       # make label
-label.grid(column=0, row=0, pady=4, padx=10, sticky="w")                      # attach to main
+label.grid(column=0, row=main_row_cnt, pady=4, padx=10, sticky="w")                      # attach to main
+main_row_cnt += 1
+
+# main window buttons container
+frame_main_btns = tk.Frame(main_window)
+frame_main_btns.grid(column=0, row=main_row_cnt, pady=0, padx=0, sticky="w")
+main_row_cnt += 1
+
+# Add a note instance button
+btn_add_note = tk.Button(frame_main_btns, text="Add New Note")
+btn_add_note.grid(column=0, row=0, padx=10, pady=10, sticky="w")
 
 # note container
 note_container = tk.Frame(main_window, borderwidth=1, relief="raised")
-note_container.grid(column=0, row=1, padx=10, pady=10, ipadx=5, ipady=5)
+note_container.grid(column=0, row=main_row_cnt, padx=10, pady=10, ipadx=5, ipady=5)
+main_row_cnt += 1
+note_row_cnt = 0
 
 # Load note header & body
 nt_h_data, nt_b_data = fn_load_from_file()
@@ -93,7 +122,12 @@ nt_h_data, nt_b_data = fn_load_from_file()
 # note header
 note_header = tk.Entry(note_container, width=60)
 note_header.insert(0, nt_h_data)
-note_header.grid(column=0, row=0, pady=(10,4), padx=10, sticky="w")
+note_header.grid(column=0, row=0, padx=(10,0), pady=(10,4), sticky="w")
+
+# Delete note button
+btn_delete_note = tk.Button(note_container, text="X", relief="sunken",
+     bd=0, activeforeground="red", font=("Courier", 16, "bold"))
+btn_delete_note.grid(column=1, row=0, padx=0, pady=0, sticky="ne")
 
 # note body
 note_body = scrolledtext.ScrolledText(note_container, wrap=tk.WORD, width=60, height=5)
@@ -101,17 +135,17 @@ note_body.insert(tk.INSERT, nt_b_data)
 note_body.grid(column=0, row=1, pady=0, padx=10, sticky="w")
 
 # Put note buttons into 1 container
-btn_frame = tk.Frame(note_container)
-btn_frame.grid(column=1, row=1, pady=0, padx=10)
+frame_note_btns = tk.Frame(note_container)
+frame_note_btns.grid(column=1, row=1, pady=0, padx=10)
 
-# Note Buttons
-btn_print = tk.Button(btn_frame, text="print", command=fn_print)
+# Note Buttons (print, save to file, save to DB)
+btn_print = tk.Button(frame_note_btns, text="Print", command=fn_print)
 btn_print.grid(column=0, row=1, pady=2, padx=0, sticky="w")
 
-btn_save_file = tk.Button(btn_frame, text="save file", command=fn_save_to_file)
+btn_save_file = tk.Button(frame_note_btns, text="Save File", command=fn_save_to_file)
 btn_save_file.grid(column=0, row=2, pady=2, padx=0, sticky="w")
 
-btn_save_db = tk.Button(btn_frame, text="save DB", command=fn_save_to_db)
+btn_save_db = tk.Button(frame_note_btns, text="Save DB", command=fn_save_to_db)
 btn_save_db.grid(column=0, row=3, pady=2, padx=0, sticky="w")
 
 
