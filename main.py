@@ -35,6 +35,7 @@ title of a note.
 # You need to call grid() or pack() to attach element to main window
 # Functions have to be defined above its call
 # Later, I can use Frame to be a single container for each note. Then have a function that replicates this for each note
+# Please remember that += and =+ are NOT THE SAME!!!! Former is increment, later is make positive...
 # ...
 ###############
 ### Imports ###
@@ -45,131 +46,76 @@ import tkinter as tk                # import GUI library... pronounced "T K Inte
 from tkinter import ttk
 from tkinter import scrolledtext
 
-###################
-### Global Vars ###
-################### 
-file_base_name = "containerNote_"
-file_num = 0
-file_ext = ".txt"
-note_path = "saved_notes/testNote.txt"
-main_row_cnt = 0    # grid row count based on main window as parent
+from aNote import aNote         # ugh... from file aNote import class aNote
 
-#################
-### Functions ###
-#################
-def load_note_container():
-    # Python is stupid. You need to clarify what is a global variable. Java > Python
-    global main_row_cnt
+# Note: I plan for now only to have 1 instance of Window attribute... so a singleton class
+class window:
+    # Class attributes for all windows... although atm is singleton
+    frame = tk.Tk()
+    note_array = []     # I might need to keep track of all the notes?
+    nt_idx = 0
+    row_cnt = 0    # grid row count based on main window as parent
+
+    file_base_name = "containerNote_"
+    file_num = 0
+    file_ext = ".txt"
+    note_path = "saved_notes/testNote.txt"
+
+    def __init__(self):
+        # instance attributes for a specific window... singleton though
+        
+        window.frame.title("Containerized Notes")
+        window.frame.geometry("650x600")           #win size x, y
+
+        # Enter Note Label
+        label = tk.Label(window.frame, text="Enter your notes", font=("Courier", 16, "bold"))       # make label
+        label.grid(column=0, row=window.row_cnt, pady=4, padx=10, sticky="w")                      # attach to main
+        window.row_cnt += 1
+
+        # main window buttons container
+        frame_main_btns = tk.Frame(window.frame)
+        frame_main_btns.grid(column=0, row=window.row_cnt, pady=0, padx=0, sticky="w")
+        window.row_cnt += 1
+
+        # Load a Note button
+        btn_add_note = tk.Button(frame_main_btns, text="Load a Note?", command=window.create_note)
+        btn_add_note.grid(column=0, row=0, padx=10, pady=10, sticky="w")
+
+        # Add a New Note button
+        btn_add_note = tk.Button(frame_main_btns, text="Add New Note", command=window.create_note)
+        btn_add_note.grid(column=1, row=0, padx=10, pady=10, sticky="w")
+
+        window.frame.mainloop()  # keep window open
+
+        print("Main Window initialized")
+
+    def inc_row_cnt():
+        window.row_cnt += 1
     
-    # note container
-    note_container = tk.Frame(main_window, borderwidth=1, relief="raised")
-    note_container.grid(column=0, row=main_row_cnt, padx=10, pady=10, ipadx=5, ipady=5)
-    main_row_cnt += 1
-    note_row_cnt = 0
+    def create_note(header_txt="", body_txt=""):
+        #newNote = aNote(window.frame, window.row_cnt)
+        newNote = aNote(window, header_txt, body_txt)
+        window.note_array.append(newNote)
+        window.nt_idx += 1
 
-    # Load note header & body
-    nt_h_data, nt_b_data = fn_load_from_file()
+    # load file
+    def fn_load_from_file(note_path):
+        # Check if file exists
+        if os.path.isfile(note_path):
+            with open(note_path, "r") as f:
+                dt_raw = f.read()
+                dt_parts = dt_raw.split('\n\n', 1)
+                data_h = dt_parts[0]
+                data_b = dt_parts[1]
+        return data_h, data_b
 
-    # note header
-    note_header = tk.Entry(note_container, width=60)
-    note_header.insert(0, nt_h_data)
-    note_header.grid(column=0, row=0, padx=(10,0), pady=(10,4), sticky="w")
-
-    # Delete note button
-    btn_delete_note = tk.Button(note_container, text="X", relief="sunken",
-        bd=0, activeforeground="red", font=("Courier", 16, "bold"))
-    btn_delete_note.grid(column=1, row=0, padx=0, pady=0, sticky="ne")
-
-    # note body
-    note_body = scrolledtext.ScrolledText(note_container, wrap=tk.WORD, width=60, height=5)
-    note_body.insert(tk.INSERT, nt_b_data)
-    note_body.grid(column=0, row=1, pady=0, padx=10, sticky="w")
-
-    # Put note buttons into 1 container
-    frame_note_btns = tk.Frame(note_container)
-    frame_note_btns.grid(column=1, row=1, pady=0, padx=10)
-
-    # Note Buttons (print, save to file, save to DB)
-    btn_print = tk.Button(frame_note_btns, text="Print", command=lambda: fn_print(note_header,note_body))
-    btn_print.grid(column=0, row=1, pady=2, padx=0, sticky="w")
-
-    btn_save_file = tk.Button(frame_note_btns, text="Save File", command=lambda: fn_save_to_file(note_header, note_body))
-    btn_save_file.grid(column=0, row=2, pady=2, padx=0, sticky="w")
-
-    btn_save_db = tk.Button(frame_note_btns, text="Save DB", command=fn_save_to_db)
-    btn_save_db.grid(column=0, row=3, pady=2, padx=0, sticky="w")
-######END###load_note_container()################################
-
-def add_note_container():
-    pass
-
-# print to terminal
-def fn_print(note_header, note_body):
-    # extract input of note header & footer
-    data_h = note_header.get()
-    data_b = note_body.get("1.0", "end-1c") # -1c deletes 1 character from end, which is newline
-    print("entered note header:", data_h)
-    print("entered note body:", data_b)
-
-# load file
-def fn_load_from_file():
-    # Check if file exists
-    if os.path.isfile(note_path):
-        with open(note_path, "r") as f:
-            dt_raw = f.read()
-            dt_parts = dt_raw.split('\n\n', 1)
-            data_h = dt_parts[0]
-            data_b = dt_parts[1]
-    return data_h, data_b
-
-# save to file
-def fn_save_to_file(note_header, note_body):
-    data_h = note_header.get()
-    data_b = note_body.get("1.0", "end-1c")
-    with open(note_path, "w") as f:    # relative to script, make subdirectory "savedNotes"
-        f.write(data_h)
-        f.write('\n\n')
-        f.write(data_b)
-    # for testing purposes, it would be nice to immediately open the file too
-    filepath = os.getcwd() + "\\saved_notes\\testNote.txt"
-    os.startfile(filepath)
-
-# save to db (later. Next step: containerize notes? uniquly name files?)
-def fn_save_to_db():
-    pass
+    def load_note():
+        # Get the list of files
+        # Get their paths
+        # fn_load_from_file(note_path)
+        # create_note()
+        pass
 
 
-##########
-### UI ###
-##########
-
-# main window
-main_window = tk.Tk()
-main_window.title("Containerized Notes")
-main_window.geometry("650x600")           #win size x, y
-
-
-
-# Enter Note Label
-label = tk.Label(main_window, text="Enter your notes", font=("Courier", 16, "bold"))       # make label
-label.grid(column=0, row=main_row_cnt, pady=4, padx=10, sticky="w")                      # attach to main
-main_row_cnt += 1
-
-# main window buttons container
-frame_main_btns = tk.Frame(main_window)
-frame_main_btns.grid(column=0, row=main_row_cnt, pady=0, padx=0, sticky="w")
-main_row_cnt += 1
-
-# Load a Note button
-btn_add_note = tk.Button(frame_main_btns, text="Load a Note?", command=load_note_container)
-btn_add_note.grid(column=0, row=0, padx=10, pady=10, sticky="w")
-
-# Add a New Note button
-btn_add_note = tk.Button(frame_main_btns, text="Add New Note", command=load_note_container)
-btn_add_note.grid(column=1, row=0, padx=10, pady=10, sticky="w")
-
-
-
-
-
-main_window.mainloop()  # keep window open
+# run main window I suppose...
+window()
