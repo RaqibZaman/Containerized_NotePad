@@ -76,7 +76,7 @@ class window:
         w_col += 1
 
         # Load a Note button
-        btn_load_nt = tk.Button(frame_main_btns, text="Load Notes", command=window.load_note)
+        btn_load_nt = tk.Button(frame_main_btns, text="Load Notes", command=window.load_notes)
         btn_load_nt.grid(column=w_col, row=0, padx=10, pady=10, sticky="w")
         w_col += 1
         window.btn_sw_arr.append(btn_load_nt)
@@ -113,6 +113,9 @@ class window:
         files = [f for f in os.listdir(dir) if os.path.isfile(os.path.join(dir, f))]
         return files
     
+    def print_nt_list():
+        print(window.get_file_list())
+    
     # load file
     def load_from_file(note_path):
         # Check if file exists
@@ -124,10 +127,7 @@ class window:
                 data_b = dt_parts[1]
         return data_h, data_b
 
-    def print_nt_list():
-        print(window.get_file_list())
-    
-    def load_note():
+    def load_notes():
         # Get the list of files
         files = window.get_file_list()
         # Get their paths

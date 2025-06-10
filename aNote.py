@@ -26,8 +26,8 @@ class aNote:
         self.note_dir = window.note_dir
         
         aNote.num_notes += 1
-        self.nt_file_num = aNote.num_notes
-        self.note_path = self.get_nt_path() # depends on nt_file_num
+        self.note_id = aNote.num_notes
+        self.note_path = self.get_note_path() # depends on nt_file_num
         
         # note container
         note_container = tk.Frame(window.frame, borderwidth=1, relief="raised")
@@ -42,7 +42,7 @@ class aNote:
 
         # Delete note button
         btn_delete_note = tk.Button(note_container, text="X", relief="sunken",
-            bd=0, activeforeground="red", font=("Courier", 16, "bold"), command=lambda: aNote.delete_nt(self))
+            bd=0, activeforeground="red", font=("Courier", 16, "bold"), command=lambda: aNote.delete_note(self))
         btn_delete_note.grid(column=1, row=0, padx=0, pady=0, sticky="ne")
 
         # note body
@@ -55,7 +55,7 @@ class aNote:
         frame_note_btns.grid(column=1, row=1, pady=0, padx=10)
 
         # Note Buttons (print, save to file, save to DB)
-        btn_print = tk.Button(frame_note_btns, text="Print", command=lambda: aNote.print_nt(note_header,note_body))
+        btn_print = tk.Button(frame_note_btns, text="Print", command=lambda: aNote.print_note(note_header,note_body))
         btn_print.grid(column=0, row=1, pady=2, padx=0, sticky="w")
 
         btn_save_file = tk.Button(frame_note_btns, text="Save File", command=lambda: aNote.save_to_file(self, note_header, note_body))
@@ -68,11 +68,17 @@ class aNote:
     ### Functions ###
     #################
 
-    def get_nt_path(self):
-        note_path = self.note_dir + self.base_file_name + str(self.nt_file_num) + ".txt"
+    def get_note_path(self):
+        note_path = self.note_dir + self.base_file_name + str(self.note_id) + ".txt"
         return note_path
     
-    def delete_nt(self):
+    # def update_note_path(self):
+    #     self.note_path = self.get_note_path()
+    
+    def update_note_id(self):
+        pass
+    
+    def delete_note(self):
         # delete frame
         self.note_container.destroy()
         # delete file
@@ -82,19 +88,27 @@ class aNote:
             print("Something is wrong... file does not exist to delete?????????????")
 
     # print to terminal
-    def print_nt(note_header, note_body):
+    def print_note(note_header, note_body):
         # extract input of note header & footer
         data_h = note_header.get()
         data_b = note_body.get("1.0", "end-1c") # -1c deletes 1 character from end, which is newline
         print("entered note header:" + "\n", data_h)
         print("entered note body:" + "\n", data_b)
-
+    
     # save to file
     def save_to_file(self, note_header, note_body):
         data_h = note_header.get()
         data_b = note_body.get("1.0", "end-1c")
         
         # Need an overwrite check
+        # if file already exists, I need to update num_notes, self.nt_file_num, self.note_path
+            # keep checking until I find a "vacant" number
+                # get the list of all files
+            # then do the update
+        while os.path.exists(self.note_path):
+            self.note_id += 1
+            self.note_path = self.get_note_path()
+            print("Spagetti Code Deluxe")
         
         with open(self.note_path, "w") as f:    # relative to script, make subdirectory "savedNotes"
             f.write(data_h)
