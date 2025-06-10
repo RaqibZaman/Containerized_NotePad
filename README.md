@@ -6,7 +6,8 @@ Make containerized NotePad for Job Application Automation Project.
 ![ContainerizedNotes_V0 2](https://github.com/user-attachments/assets/683b0d31-71a0-4d08-8b3d-4f56af0ef4ea)
 
 Made code OOP, should have started with that, oops!
-New Features
+
+New Features:
 * load all previously saved notes
 * add new notes
 * save note as file with unique id
