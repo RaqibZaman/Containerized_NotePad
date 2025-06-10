@@ -6,21 +6,11 @@ the header text of an input element, and pulling up information that most closel
 title of a note.
 '''
 # Short-term Objective: Make a notepad with containerized notes with header and body.
-# Steps
-    # 1.[x] Make a window
-        # [] Need to make window scrollable );
-    # 2.[x] Make editable field (note header, body)
-    # 3.[] Must be able to save contents
-        # 1.[x] test saving to a notepad
-            # [x] when opening app, should automatically load any previous notes
-        # 2.[] test saving to a database for fun- probably easier to manage in the long run
-    # 4.[] Containerize each "note"
-        # 0.[x] Add/Delete note btn
-            # [] add/delete not btns functions
-        # 1.[] Should be able to make multiple notes
-        # 2.[] filename = basename + number
-            # You added and deleted random files. Find file of biggest number x. New file will be x+1
-        # 3.[] Deleting notes => delete file too
+# To Do
+    # [x] Deleting notes => delete file too
+    # [] When saving file, Find file of biggest number x. New file will be x+1. NO OVERWRITING PLS 
+    # [] Need to make window scrollable );
+    # [] test saving to a database for fun- probably easier to manage in the long run
     # ...
 
 ### Dev notes ###

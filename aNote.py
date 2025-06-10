@@ -14,25 +14,20 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import scrolledtext
 
-#from main import *
 class aNote:
-    # Class attributes go here - is shared by all instances of aNote
+    # Class attrs
     num_notes = 0
+    base_file_name = "containerNote_"
 
-    # I need to pass in the main_window object. Since all notes go inside it
-    # I need to keep the main_window grid count for rows.
-    # I need a helper method to get the list of "saved" notes. 
-    # Disallow adding new notes until previous ones are loaded. 
-        # Onces loaded, you can grey out the load notes button
-    
-
-    # __init__ is like a constructor
     def __init__(self, window, header_txt="", body_txt=""):
-        # Instance attributes go here - belongs to specific instance, not shared
+        # Instance attrs
+        self.header_txt = header_txt
+        self.body_txt = body_txt
         self.note_dir = window.note_dir
         
         aNote.num_notes += 1
         self.nt_file_num = aNote.num_notes
+        self.note_path = self.get_nt_path() # depends on nt_file_num
         
         # note container
         note_container = tk.Frame(window.frame, borderwidth=1, relief="raised")
@@ -42,7 +37,7 @@ class aNote:
 
         # note header
         note_header = tk.Entry(note_container, width=60)
-        note_header.insert(0, header_txt)
+        note_header.insert(0, self.header_txt)
         note_header.grid(column=0, row=0, padx=(10,0), pady=(10,4), sticky="w")
 
         # Delete note button
@@ -52,7 +47,7 @@ class aNote:
 
         # note body
         note_body = scrolledtext.ScrolledText(note_container, wrap=tk.WORD, width=60, height=5)
-        note_body.insert(tk.INSERT, body_txt)
+        note_body.insert(tk.INSERT, self.body_txt)
         note_body.grid(column=0, row=1, pady=0, padx=10, sticky="w")
 
         # Put note buttons into 1 container
@@ -73,10 +68,18 @@ class aNote:
     ### Functions ###
     #################
 
+    def get_nt_path(self):
+        note_path = self.note_dir + self.base_file_name + str(self.nt_file_num) + ".txt"
+        return note_path
+    
     def delete_nt(self):
         # delete frame
         self.note_container.destroy()
         # delete file
+        if os.path.exists(self.note_path):
+            os.remove(self.note_path)
+        else:
+            print("Something is wrong... file does not exist to delete?????????????")
 
     # print to terminal
     def print_nt(note_header, note_body):
@@ -90,19 +93,18 @@ class aNote:
     def save_to_file(self, note_header, note_body):
         data_h = note_header.get()
         data_b = note_body.get("1.0", "end-1c")
-        note_path = self.note_dir + "containerNote_" + str(self.nt_file_num) + ".txt"
-        with open(note_path, "w") as f:    # relative to script, make subdirectory "savedNotes"
+        
+        # Need an overwrite check
+        
+        with open(self.note_path, "w") as f:    # relative to script, make subdirectory "savedNotes"
             f.write(data_h)
             f.write('\n\n')
             f.write(data_b)
+        
         # for testing purposes, it would be nice to immediately open the file too
-        print(os.getcwd())
-        print(note_path)    # saved_notes/containerNote_1.txt
-        os_path = "\\" + note_path.replace("/", "\\")
-        print(os_path)
-        #filepath = os.getcwd() + "\\saved_notes\\testNote.txt"
-        filepath = os.getcwd() + os_path
-        os.startfile(filepath)
+        start_file_path = "\\" + self.note_path.replace("/", "\\")
+        filepath = os.getcwd() + start_file_path
+        os.startfile(filepath)  # open's saved file
 
     # save to db (later. Next step: containerize notes? uniquly name files?)
     def fn_save_to_db():
