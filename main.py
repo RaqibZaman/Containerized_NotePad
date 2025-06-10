@@ -52,18 +52,20 @@ from aNote import aNote         # ugh... from file aNote import class aNote
 class window:
     # Class attributes for all windows... although atm is singleton
     frame = tk.Tk()
+    btn_sw_arr = []
     note_array = []     # I might need to keep track of all the notes?
     nt_idx = 0
     row_cnt = 0    # grid row count based on main window as parent
 
-    file_base_name = "containerNote_"
+    #file_base_name = "containerNote_"
     file_num = 0
     file_ext = ".txt"
+    note_dir = "saved_notes/"
     note_path = "saved_notes/testNote.txt"
 
     def __init__(self):
         # instance attributes for a specific window... singleton though
-        
+
         window.frame.title("Containerized Notes")
         window.frame.geometry("650x600")           #win size x, y
 
@@ -77,20 +79,37 @@ class window:
         frame_main_btns.grid(column=0, row=window.row_cnt, pady=0, padx=0, sticky="w")
         window.row_cnt += 1
 
+        w_col = 0
+        # Print Note List button
+        btn_print_nt = tk.Button(frame_main_btns, text="Print Note List", command=window.print_nt_list)
+        btn_print_nt.grid(column=w_col, row=0, padx=10, pady=10, sticky="w")
+        w_col += 1
+
         # Load a Note button
-        btn_add_note = tk.Button(frame_main_btns, text="Load a Note?", command=window.create_note)
-        btn_add_note.grid(column=0, row=0, padx=10, pady=10, sticky="w")
+        btn_load_nt = tk.Button(frame_main_btns, text="Load Notes", command=window.load_note)
+        btn_load_nt.grid(column=w_col, row=0, padx=10, pady=10, sticky="w")
+        w_col += 1
+        window.btn_sw_arr.append(btn_load_nt)
 
         # Add a New Note button
-        btn_add_note = tk.Button(frame_main_btns, text="Add New Note", command=window.create_note)
-        btn_add_note.grid(column=1, row=0, padx=10, pady=10, sticky="w")
-
-        window.frame.mainloop()  # keep window open
+        btn_add_nt = tk.Button(frame_main_btns, text="Add New Note", command=window.create_note)
+        btn_add_nt.grid(column=w_col, row=0, padx=10, pady=10, sticky="w")
+        w_col += 1
+        window.dis_btn(btn_add_nt)
+        window.btn_sw_arr.append(btn_add_nt)
 
         print("Main Window initialized")
+        window.frame.mainloop()  # keep window open
 
-    def inc_row_cnt():
-        window.row_cnt += 1
+    def dis_btn(btn):
+        btn.config(state="disabled")
+
+    def enb_btn(btn):
+        btn.config(state="normal")
+
+    def switch_btn_state(btn1, btn2):
+        window.dis_btn(btn1)
+        window.enb_btn(btn2)
     
     def create_note(header_txt="", body_txt=""):
         #newNote = aNote(window.frame, window.row_cnt)
@@ -98,8 +117,14 @@ class window:
         window.note_array.append(newNote)
         window.nt_idx += 1
 
+    # get list of files
+    def get_file_list():
+        dir = window.note_dir
+        files = [f for f in os.listdir(dir) if os.path.isfile(os.path.join(dir, f))]
+        return files
+    
     # load file
-    def fn_load_from_file(note_path):
+    def load_from_file(note_path):
         # Check if file exists
         if os.path.isfile(note_path):
             with open(note_path, "r") as f:
@@ -109,12 +134,20 @@ class window:
                 data_b = dt_parts[1]
         return data_h, data_b
 
+    def print_nt_list():
+        print(window.get_file_list())
+    
     def load_note():
         # Get the list of files
+        files = window.get_file_list()
         # Get their paths
-        # fn_load_from_file(note_path)
-        # create_note()
-        pass
+        file_paths = [window.note_dir + f for f in files]
+        for p in file_paths:
+            h,b = window.load_from_file(p)
+            window.create_note(h,b)
+
+        b1, b2 = window.btn_sw_arr
+        window.switch_btn_state(b1, b2)
 
 
 # run main window I suppose...
