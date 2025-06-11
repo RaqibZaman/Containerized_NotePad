@@ -57,7 +57,7 @@ class window:
         # instance attributes for a specific window... singleton though
 
         window.frame.title("Containerized Notes")
-        window.frame.geometry("650x600")           #win size x, y
+        window.frame.geometry("650x650")           #win size x, y
 
         # Enter Note Label
         label = tk.Label(window.frame, text="Enter your notes", font=("Courier", 16, "bold"))       # make label
