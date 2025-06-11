@@ -27,7 +27,7 @@ class aNote:
         self.note_dir = window.note_dir
 
         # note id needs to iterate from max id. Check file_num against max_id
-        if aNote.get_max_id == file_num:
+        if aNote.get_max_id() == file_num:
             self.note_id = file_num + 1
         else:
             self.note_id = file_num

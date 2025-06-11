@@ -101,7 +101,7 @@ class window:
         window.dis_btn(btn1)
         window.enb_btn(btn2)
     
-    def check_nt_exists():
+    def check_files_exist():
         files = window.get_file_list()
         file_nums = [window.get_file_num(f) for f in files]
         num = 1
@@ -116,7 +116,7 @@ class window:
         # load note:: file_num !=-1
         # add new note:: file_num == -1
         if (file_num == -1):
-            file_num = window.check_nt_exists()
+            file_num = window.check_files_exist()
         
         newNote = aNote(window, file_num, header_txt, body_txt)
         window.note_array.append(newNote)
@@ -146,7 +146,7 @@ class window:
         # without ".txt"
         str = file_path.rsplit(".txt", 1)[0]
         file_num = str.rsplit("_", 1)[1]
-        return file_num
+        return int(file_num)
     
     def load_notes():
         # Get the list of files
