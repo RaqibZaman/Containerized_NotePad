@@ -8,7 +8,7 @@ title of a note.
 # Short-term Objective: Make a notepad with containerized notes with header and body.
 # To Do
     # [x] Deleting notes => delete file too
-    # [] When saving file, Find file of biggest number x. New file will be x+1. NO OVERWRITING PLS 
+    # [] If all notes are deleted, reset note_id and note_number I guess
     # [] Need to make window scrollable );
     # [] test saving to a database for fun- probably easier to manage in the long run
     # ...
@@ -101,9 +101,10 @@ class window:
         window.dis_btn(btn1)
         window.enb_btn(btn2)
     
-    def create_note(header_txt="", body_txt=""):
+    def create_note(file_num=-1, header_txt="", body_txt=""):
         #newNote = aNote(window.frame, window.row_cnt)
-        newNote = aNote(window, header_txt, body_txt)
+        #if (file_num)
+        newNote = aNote(window, file_num, header_txt, body_txt)
         window.note_array.append(newNote)
         window.nt_idx += 1
 
@@ -127,17 +128,31 @@ class window:
                 data_b = dt_parts[1]
         return data_h, data_b
 
+    def get_file_num(file_path):
+        # without ".txt"
+        str = file_path.rsplit(".txt", 1)[0]
+        file_num = str.rsplit("_", 1)[1]
+        return file_num
+    
     def load_notes():
         # Get the list of files
         files = window.get_file_list()
         # Get their paths
         file_paths = [window.note_dir + f for f in files]
         for p in file_paths:
-            h,b = window.load_from_file(p)
-            window.create_note(h,b)
+            header, body = window.load_from_file(p)
+            file_num = window.get_file_num(p)
+            window.create_note(file_num, header, body)
 
         b1, b2 = window.btn_sw_arr
         window.switch_btn_state(b1, b2)
+
+
+    def test_run():
+        # load notes
+        # new notes
+        # save notes
+        pass
 
 
 # run main window I suppose...

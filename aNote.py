@@ -19,42 +19,46 @@ class aNote:
     num_notes = 0
     base_file_name = "containerNote_"
 
-    def __init__(self, window, header_txt="", body_txt=""):
+    def __init__(self, window, file_num, header_txt, body_txt):
         # Instance attrs
         self.header_txt = header_txt
         self.body_txt = body_txt
         self.note_dir = window.note_dir
         
         aNote.num_notes += 1
-        self.note_id = aNote.num_notes
-        self.note_path = self.get_note_path() # depends on nt_file_num
+
+        if file_num == -1:
+            self.note_id = aNote.num_notes
+        else:
+            self.note_id = file_num
+
+        self.note_path = self.get_note_path() # depends on self.note_id
         
         # note container
         note_container = tk.Frame(window.frame, borderwidth=1, relief="raised")
         note_container.grid(column=0, row=window.row_cnt, padx=10, pady=10, ipadx=5, ipady=5)
         window.row_cnt += 1
-        self.note_container = note_container
+        self.note_container = note_container    # Why???
 
         # note header
         note_header = tk.Entry(note_container, width=60)
         note_header.insert(0, self.header_txt)
         note_header.grid(column=0, row=0, padx=(10,0), pady=(10,4), sticky="w")
-
+        
         # Delete note button
         btn_delete_note = tk.Button(note_container, text="X", relief="sunken",
             bd=0, activeforeground="red", font=("Courier", 16, "bold"), command=lambda: aNote.delete_note(self))
-        btn_delete_note.grid(column=1, row=0, padx=0, pady=0, sticky="ne")
+        btn_delete_note.grid(column=2, row=0, padx=0, pady=0, sticky="ne")
 
         # note body
         note_body = scrolledtext.ScrolledText(note_container, wrap=tk.WORD, width=60, height=5)
         note_body.insert(tk.INSERT, self.body_txt)
         note_body.grid(column=0, row=1, pady=0, padx=10, sticky="w")
 
-        # Put note buttons into 1 container
+        #### START frame_note_btns ###
         frame_note_btns = tk.Frame(note_container)
         frame_note_btns.grid(column=1, row=1, pady=0, padx=10)
 
-        # Note Buttons (print, save to file, save to DB)
         btn_print = tk.Button(frame_note_btns, text="Print", command=lambda: aNote.print_note(note_header,note_body))
         btn_print.grid(column=0, row=1, pady=2, padx=0, sticky="w")
 
@@ -63,6 +67,21 @@ class aNote:
 
         btn_save_db = tk.Button(frame_note_btns, text="Save DB", command=aNote.fn_save_to_db)
         btn_save_db.grid(column=0, row=3, pady=2, padx=0, sticky="w")
+        #### END frame_note_btns ###
+
+        ### START debug_frame ###
+        frame_debug = tk.Frame(note_container)
+        frame_debug.grid(column=0, row=2, pady=0, padx=10, sticky="w")
+        
+        # Note ID
+        btn_delete_note = tk.Button(frame_debug, text=("id: " + str(self.note_id)), relief="sunken", bd=1)
+        btn_delete_note.grid(column=0, row=0, padx=(0,2), pady=0, sticky="w")
+
+        # note_path
+        btn_delete_note = tk.Button(frame_debug, text=self.note_path, relief="sunken", bd=1)
+        btn_delete_note.grid(column=1, row=0, padx=(0,2), pady=0, sticky="w")
+        ### END debug_frame ###
+
     
     #################
     ### Functions ###
@@ -82,6 +101,7 @@ class aNote:
         # delete frame
         self.note_container.destroy()
         # delete file
+        print(self.note_path)
         if os.path.exists(self.note_path):
             os.remove(self.note_path)
         else:
@@ -101,14 +121,12 @@ class aNote:
         data_b = note_body.get("1.0", "end-1c")
         
         # Need an overwrite check
-        # if file already exists, I need to update num_notes, self.nt_file_num, self.note_path
-            # keep checking until I find a "vacant" number
-                # get the list of all files
-            # then do the update
-        while os.path.exists(self.note_path):
-            self.note_id += 1
-            self.note_path = self.get_note_path()
-            print("Spagetti Code Deluxe")
+        # So just check that the note_id matches the file_num... Overwritting the same note by same file is fine.
+        
+        # while os.path.exists(self.note_path):
+        #     self.note_id += 1
+        #     self.note_path = self.get_note_path()
+        #     print("Spagetti Code Deluxe")
         
         with open(self.note_path, "w") as f:    # relative to script, make subdirectory "savedNotes"
             f.write(data_h)
