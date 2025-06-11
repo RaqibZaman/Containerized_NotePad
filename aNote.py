@@ -16,21 +16,22 @@ from tkinter import scrolledtext
 
 class aNote:
     # Class attrs
-    num_notes = 0
+    max_id = 0
     base_file_name = "containerNote_"
+    id_list= []
 
     def __init__(self, window, file_num, header_txt, body_txt):
         # Instance attrs
         self.header_txt = header_txt
         self.body_txt = body_txt
         self.note_dir = window.note_dir
-        
-        aNote.num_notes += 1
 
-        if file_num == -1:
-            self.note_id = aNote.num_notes
+        # note id needs to iterate from max id. Check file_num against max_id
+        if aNote.get_max_id == file_num:
+            self.note_id = file_num + 1
         else:
             self.note_id = file_num
+        aNote.id_list.append(self.note_id)      # keep track of existing notes by id
 
         self.note_path = self.get_note_path() # depends on self.note_id
         
@@ -94,12 +95,16 @@ class aNote:
     # def update_note_path(self):
     #     self.note_path = self.get_note_path()
     
-    def update_note_id(self):
-        pass
+    def get_max_id():
+        if aNote.id_list:
+            return max(aNote.id_list)
+        return 0
     
     def delete_note(self):
         # delete frame
+        aNote.id_list.remove(self.note_id)
         self.note_container.destroy()
+        # still need to garbage collect the instance of aNote... if it ain't broke, don't fix it ¯\_(ツ)_/¯
         # delete file
         print(self.note_path)
         if os.path.exists(self.note_path):
@@ -119,14 +124,6 @@ class aNote:
     def save_to_file(self, note_header, note_body):
         data_h = note_header.get()
         data_b = note_body.get("1.0", "end-1c")
-        
-        # Need an overwrite check
-        # So just check that the note_id matches the file_num... Overwritting the same note by same file is fine.
-        
-        # while os.path.exists(self.note_path):
-        #     self.note_id += 1
-        #     self.note_path = self.get_note_path()
-        #     print("Spagetti Code Deluxe")
         
         with open(self.note_path, "w") as f:    # relative to script, make subdirectory "savedNotes"
             f.write(data_h)

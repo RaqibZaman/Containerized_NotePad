@@ -101,9 +101,23 @@ class window:
         window.dis_btn(btn1)
         window.enb_btn(btn2)
     
+    def check_nt_exists():
+        files = window.get_file_list()
+        file_nums = [window.get_file_num(f) for f in files]
+        num = 1
+        if file_nums:
+            num = int(max(file_nums)) + 1
+        return num
+    
     def create_note(file_num=-1, header_txt="", body_txt=""):
-        #newNote = aNote(window.frame, window.row_cnt)
-        #if (file_num)
+        
+        #BUG: Say you load 1 note with note id=2, and add new note, then the new note will have note id=2- with both showing
+        
+        # load note:: file_num !=-1
+        # add new note:: file_num == -1
+        if (file_num == -1):
+            file_num = window.check_nt_exists()
+        
         newNote = aNote(window, file_num, header_txt, body_txt)
         window.note_array.append(newNote)
         window.nt_idx += 1
